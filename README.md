@@ -1,6 +1,8 @@
 Hoard
 =====
 
+[![Build Status](https://travis-ci.org/elliotchance/Hoard.svg?branch=master)](https://travis-ci.org/elliotchance/Hoard)
+
 What Is It?
 -----------
 
