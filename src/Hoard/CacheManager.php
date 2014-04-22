@@ -73,8 +73,7 @@ class CacheManager implements CacheManagerInterface
      */
     public static function getPoolNamespace()
     {
-        return '\Hoard\Pool';
+        return '\HoardPool';
     }
 
 }
-

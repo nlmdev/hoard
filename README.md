@@ -42,8 +42,8 @@ Pools are located in a specific namespace provided by
 `\Hoard\CacheManager::getNamespace()`, which as of the writing of this
 document, is `\Hoard\Hoard\Pool`. Extending from the above examples;
 
-* `my_pool` => `\Hoard\Hoard\Pool\MyPool`
-* `parent.child_pool` => `\Hoard\Hoard\Pool\Parent\ChildPool`
+* `my_pool` => `\HoardPool\MyPool`
+* `parent.child_pool` => `\HoardPool\Parent\ChildPool`
 
 **Never instantiate the classes themselfs. You must use the `CacheManager` to
 retrieve the pool instances.**
