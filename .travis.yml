@@ -2,4 +2,7 @@ language: php
 php:
   - 5.5
 install:
-   - composer install
+  - composer install
+services:
+  - memcached
+before_script: phpenv config-add config/memcached.ini
