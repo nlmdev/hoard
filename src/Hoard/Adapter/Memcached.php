@@ -27,6 +27,9 @@ class Memcached extends \Hoard\AbstractAdapter
     {
         // first time connect
         if(null == $this->connection) {
+            if(!class_exists('\Memcached')) {
+                throw new \Exception('Memcached extension is not installed.');
+            }
             $this->connection = new \Memcached();
 
             // add servers

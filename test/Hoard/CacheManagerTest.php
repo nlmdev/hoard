@@ -27,7 +27,7 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testTheNamespaceForPoolsIsCorrect()
     {
-        $this->assertSame('\Hoard\Pool', CacheManager::getPoolNamespace());
+        $this->assertSame('\HoardPool', CacheManager::getPoolNamespace());
     }
 
     /**

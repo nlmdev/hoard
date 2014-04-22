@@ -7,9 +7,17 @@ class SimpleTest extends \Hoard\PoolTest
 
     protected function getPool()
     {
-        $pool = \Hoard\CacheManager::getPool('test.simple');
-        $pool->clear();
-        return $pool;
+        try {
+            $pool = \Hoard\CacheManager::getPool('test.simple');
+            $pool->clear();
+            return $pool;
+        }
+        catch(\Exception $e) {
+            if($e->getMessage() == 'Memcached extension is not installed.') {
+                $this->markTestSkipped();
+            }
+            throw $e;
+        }
     }
 
     public function testPoolName()

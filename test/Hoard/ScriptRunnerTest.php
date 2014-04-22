@@ -13,9 +13,17 @@ class ScriptRunnerTest extends \PHPUnit_Framework_TestCase
     {
         $this->runner = new ScriptRunner('');
 
-        // create our running application cache
-        $this->pool = CacheManager::getPool('test.memcached');
-        $this->pool->clear();
+        try {
+            // create our running application cache
+            $this->pool = CacheManager::getPool('test.memcached');
+            $this->pool->clear();
+        }
+        catch(\Exception $e) {
+            if($e->getMessage() == 'Memcached extension is not installed.') {
+                $this->markTestSkipped();
+            }
+            throw $e;
+        }
 
         $this->add('mykey1', 'some data');
         $this->add('mykey2', 'some other data');

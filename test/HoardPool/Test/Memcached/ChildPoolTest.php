@@ -7,9 +7,22 @@ class ChildPoolTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        parent::setUp();
+
         // get pools
         $this->parentPool = \Hoard\CacheManager::getPool('test.memcached');
         $this->childPool = \Hoard\CacheManager::getPool('test.memcached.child_pool');
+
+        try {
+            // test for extension
+            $this->parentPool->getItem('doesnt_exist');
+        }
+        catch(\Exception $e) {
+            if($e->getMessage() == 'Memcached extension is not installed.') {
+                $this->markTestSkipped();
+            }
+            throw $e;
+        }
 
         // rather than getting blank pools, we want to ensure existing data
         // stays in there and we use non-colliding keys

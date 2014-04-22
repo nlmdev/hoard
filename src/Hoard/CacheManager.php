@@ -36,8 +36,10 @@ class CacheManager implements CacheManagerInterface
     /**
      * Get a pool by name.
      * @param string $poolName The name of the pool.
+     * @param array $config Optional configuration for adapter.
+     * @return \Hoard\AbstractPool
      */
-    public static function getPool($poolName)
+    public static function getPool($poolName, array $config = array())
     {
         $className = self::getClassFromPoolName($poolName);
         if(!class_exists($className)) {
