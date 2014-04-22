@@ -1,6 +1,6 @@
 <?php
 
-namespace Hoard\Pool\Test;
+namespace HoardPool\Test;
 
 class SimpleTest extends \Hoard\PoolTest
 {

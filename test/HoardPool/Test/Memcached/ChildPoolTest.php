@@ -1,6 +1,6 @@
 <?php
 
-namespace Hoard\Pool\Test\Memcached;
+namespace HoardPool\Test\Memcached;
 
 class ChildPoolTest extends \PHPUnit_Framework_TestCase
 {
