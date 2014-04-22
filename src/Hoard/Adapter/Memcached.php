@@ -32,6 +32,13 @@ class Memcached extends \Hoard\AbstractAdapter
             }
             $this->connection = new \Memcached();
 
+            // if no servers are provided try to bind to default configuration
+            if(!array_key_exists('servers', $this->adapterOptions)) {
+                $this->adapterOptions['servers'] = array(
+                    'localhost:11211'
+                );
+            }
+
             // add servers
             foreach($this->adapterOptions['servers'] as $server) {
                 list($host, $port) = explode(':', $server, 2);
