@@ -1,5 +1,6 @@
 {
     "name": "elliotchance/hoard",
+    "description": "A PSR-compliant caching library for holding objects in nested pools with scripting ability.",
     "authors": [
         {
             "name": "Elliot Chance",
@@ -7,6 +8,7 @@
         }
     ],
     "require": {
+        "php": ">=5.3.0",
         "psr/log": "1.0.*@dev"
     },
     "require-dev": {
