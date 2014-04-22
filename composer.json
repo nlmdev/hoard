@@ -7,6 +7,14 @@
         }
     ],
     "require": {
-
+        "psr/log": "1.0.*@dev"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.0.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "": [ "test/", "src/" ]
+        }
     }
 }
