@@ -15,6 +15,13 @@ class DummyLogger extends \Psr\Log\AbstractLogger
 class CacheManagerTest extends \PHPUnit_Framework_TestCase
 {
 
+    public function testDefaultLoggerIsASingleton()
+    {
+        $a = CacheManager::getDefaultLogger();
+        $b = CacheManager::getDefaultLogger();
+        $this->assertSame($a, $b);
+    }
+
     public function testDefaultLoggerWillBeSetOnInitialisation()
     {
         $pool = CacheManager::getPool('test.simple');
