@@ -23,4 +23,12 @@ interface CacheManagerInterface
      */
     public static function getPoolNamespace();
 
+    /**
+     * Set the default logging instance.
+     * @param \Psr\Log\LoggerInterface $logger the logger to send all messages
+     * to.
+     * @return true
+     */
+    public static function setDefaultLogger(\Psr\Log\LoggerInterface $logger);
+
 }

@@ -34,6 +34,11 @@ class CacheManager implements CacheManagerInterface
     const MINUTE = 60;
 
     /**
+     * @var \Psr\Logger\LoggerInterface
+     */
+    protected static $defaultLogger;
+
+    /**
      * Get a pool by name.
      * @param string $poolName The name of the pool.
      * @param array $config Optional configuration for adapter.
@@ -76,6 +81,17 @@ class CacheManager implements CacheManagerInterface
     public static function getPoolNamespace()
     {
         return '\HoardPool';
+    }
+
+    /**
+     * Set the default logging instance.
+     * @param \Psr\Log\LoggerInterface $logger the logger to send all messages
+     * to.
+     * @return true
+     */
+    public static function setDefaultLogger(\Psr\Log\LoggerInterface $logger)
+    {
+        self::$defaultLogger = $logger;
     }
 
 }
