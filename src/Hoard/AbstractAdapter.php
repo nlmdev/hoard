@@ -31,5 +31,10 @@ abstract class AbstractAdapter implements AdapterInterface
         $this->adapterOptions = $adapterOptions;
     }
 
+    public function setAdapterOptions(array $adapterOptions)
+    {
+        $this->adapterOptions = $adapterOptions;
+    }
+
 }
 

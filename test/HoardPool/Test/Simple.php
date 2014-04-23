@@ -10,5 +10,12 @@ class Simple extends \Hoard\AbstractPool
         return 'transient';
     }
 
+    public function getAdapterOptions()
+    {
+        return array(
+            'adapter' => 'options'
+        );
+    }
+
 }
 
