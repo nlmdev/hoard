@@ -157,5 +157,14 @@ abstract class AbstractPool implements PoolInterface
         return new \DateTime('1st January 2038');
     }
 
+    /**
+     * Get adapter options. This is optional to override.
+     * @return array
+     */
+    public function getAdapterOptions()
+    {
+        return array();
+    }
+
 }
 

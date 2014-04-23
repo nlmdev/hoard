@@ -7,5 +7,8 @@ namespace Hoard;
  */
 interface PoolInterface extends \Psr\Cache\PoolInterface
 {
+
+    public function getAdapterOptions();
+
 }
 
