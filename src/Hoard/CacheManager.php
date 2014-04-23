@@ -36,7 +36,7 @@ class CacheManager implements CacheManagerInterface
     /**
      * @var \Psr\Logger\LoggerInterface
      */
-    protected static $defaultLogger;
+    protected static $defaultLogger = null;
 
     /**
      * Get a pool by name.
@@ -58,7 +58,22 @@ class CacheManager implements CacheManagerInterface
         // create pool
         $pool = new $className($adapter);
         $adapter->setPool($pool);
+
+        // attach the default logger
+        $pool->setLogger(self::getDefaultLogger());
+
         return $pool;
+    }
+
+    /**
+     * @return \Psr\Logger\LoggerInterface
+     */
+    public static function getDefaultLogger()
+    {
+        if(null === self::$defaultLogger) {
+            self::$defaultLogger = new \Monolog\Logger('DefaultHoardLogger');
+        }
+        return self::$defaultLogger;
     }
 
     /**
