@@ -71,12 +71,14 @@ abstract class AbstractPool implements PoolInterface
     public function getItem($key)
     {
         $item = $this->getAdapter()->get($key);
-        $this->logger->info("{pool}.{key}", array(
-            'category' => 'cache',
-            'pool' => $this->getName(),
-            'key' => $key,
-            'isHit' => $item->isHit()
-        ));
+        if(null !== $this->logger) {
+            $this->logger->info("{pool}.{key}", array(
+                'category' => 'cache',
+                'pool' => $this->getName(),
+                'key' => $key,
+                'isHit' => $item->isHit()
+            ));
+        }
         return $item;
     }
 
