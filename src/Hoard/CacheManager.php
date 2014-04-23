@@ -92,6 +92,7 @@ class CacheManager implements CacheManagerInterface
     public static function setDefaultLogger(\Psr\Log\LoggerInterface $logger)
     {
         self::$defaultLogger = $logger;
+        return true;
     }
 
 }

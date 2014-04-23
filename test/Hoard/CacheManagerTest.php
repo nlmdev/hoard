@@ -15,6 +15,12 @@ class DummyLogger extends \Psr\Log\AbstractLogger
 class CacheManagerTest extends \PHPUnit_Framework_TestCase
 {
 
+    public function testSetDefaultLoggerWillAlwaysReturnTrue()
+    {
+        $r = CacheManager::setDefaultLogger(new DummyLogger());
+        $this->assertTrue($r);
+    }
+
     public function testCanSetADefaultLogger()
     {
         CacheManager::setDefaultLogger(new DummyLogger());
