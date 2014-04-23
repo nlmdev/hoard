@@ -2,8 +2,42 @@
 
 namespace Hoard;
 
+class DummyLogger extends \Psr\Log\AbstractLogger
+{
+
+    public function log($level, $message, array $context = array())
+    {
+        // do nothing
+    }
+
+}
+
 class CacheManagerTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function testDefaultLoggerIsASingleton()
+    {
+        $a = CacheManager::getDefaultLogger();
+        $b = CacheManager::getDefaultLogger();
+        $this->assertSame($a, $b);
+    }
+
+    public function testDefaultLoggerWillBeSetOnInitialisation()
+    {
+        $pool = CacheManager::getPool('test.simple');
+        $this->assertInstanceOf('\Psr\Log\LoggerInterface', $pool->getLogger());
+    }
+
+    public function testSetDefaultLoggerWillAlwaysReturnTrue()
+    {
+        $r = CacheManager::setDefaultLogger(new DummyLogger());
+        $this->assertTrue($r);
+    }
+
+    public function testCanSetADefaultLogger()
+    {
+        CacheManager::setDefaultLogger(new DummyLogger());
+    }
 
     /**
      * @expectedException \Hoard\NoSuchPoolException

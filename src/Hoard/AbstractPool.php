@@ -14,7 +14,7 @@ abstract class AbstractPool implements PoolInterface
     protected $adapter = null;
 
     /**
-     * @var \Psr\Log\AbstractLogger
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger = null;
 
@@ -28,10 +28,18 @@ abstract class AbstractPool implements PoolInterface
     }
 
     /**
-     * Set the logger.
-     * @var \Psr\Log\AbstractLogger $logger The logger instance.
+     * @return \Psr\Log\LoggerInterface
      */
-    public function setLogger(\Psr\Log\AbstractLogger $logger)
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
+     * Set the logger.
+     * @var \Psr\Log\LoggerInterface $logger The logger instance.
+     */
+    public function setLogger(\Psr\Log\LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
@@ -64,7 +72,7 @@ abstract class AbstractPool implements PoolInterface
     {
         $item = $this->getAdapter()->get($key);
         if(null !== $this->logger) {
-            $logger->info("{pool}.{key}", array(
+            $this->logger->info("{pool}.{key}", array(
                 'category' => 'cache',
                 'pool' => $this->getName(),
                 'key' => $key,
