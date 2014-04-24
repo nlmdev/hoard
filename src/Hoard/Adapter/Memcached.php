@@ -62,15 +62,30 @@ class Memcached extends \Hoard\AbstractAdapter
         return new \Hoard\Item($this->pool, $key, $value, true);
     }
 
+    public function validateKey($key)
+    {
+        for($i = 0; $i < strlen($key); ++$i) {
+            if(ctype_cntrl($key[$i])) {
+                throw new \Hoard\InvalidArgumentException("Keys cannot contain control characters.");
+            }
+            if(ctype_space($key[$i])) {
+                throw new \Hoard\InvalidArgumentException("Keys cannot contain whitespace characters.");
+            }
+        }
+    }
+
     /**
      * Save item.
      * @param string $key The key.
      * @param mixed $value The unserialized value.
      * @param \DateTime $expireTime The absolute time this item must expire.
      * @return bool
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function set($key, $value, \DateTime $expireTime)
     {
+        $this->validateKey($key);
+
         // To prevent the clock in the memcache server becoming out of sync
         // with that of the applicaton server we are allowed to specify the
         // seconds upto 1 month. Recognise this and handle appropriately.
