@@ -84,6 +84,8 @@ class Memcached extends \Hoard\AbstractAdapter
      */
     public function set($key, $value, \DateTime $expireTime)
     {
+        $this->validateKey($key);
+
         // To prevent the clock in the memcache server becoming out of sync
         // with that of the applicaton server we are allowed to specify the
         // seconds upto 1 month. Recognise this and handle appropriately.

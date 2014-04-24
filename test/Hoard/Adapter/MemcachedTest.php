@@ -25,4 +25,19 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
         $adapter->validateKey(" a");
     }
 
+    public function testKeyWillBeValidatedOnSet()
+    {
+        $key = 'abc';
+        $adapter = $this->getMock('\Hoard\Adapter\Memcached', array('validateKey', 'getPrefix'));
+        $adapter->expects($this->once())
+                ->method('validateKey')
+                ->with($key)
+                ->will($this->returnValue(null));
+        $adapter->expects($this->any())
+                ->method('getPrefix')
+                ->will($this->returnValue(''));
+
+        $adapter->set($key, '', new \DateTime());
+    }
+
 }
