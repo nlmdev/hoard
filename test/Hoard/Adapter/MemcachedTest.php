@@ -12,7 +12,7 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
     public function testKeyWillNotAcceptControlCharacters()
     {
         $adapter = new \Hoard\Adapter\Memcached();
-        $adapter->validateKey("\n");
+        $adapter->validateKey("a\n");
     }
 
     /**
@@ -22,7 +22,7 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
     public function testKeyWillNotAcceptWhitespaceCharacters()
     {
         $adapter = new \Hoard\Adapter\Memcached();
-        $adapter->validateKey(" ");
+        $adapter->validateKey(" a");
     }
 
 }

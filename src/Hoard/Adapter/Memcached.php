@@ -64,11 +64,13 @@ class Memcached extends \Hoard\AbstractAdapter
 
     public function validateKey($key)
     {
-        if(ctype_cntrl($key)) {
-            throw new \Hoard\InvalidArgumentException("Keys cannot contain control characters.");
-        }
-        if(ctype_space($key)) {
-            throw new \Hoard\InvalidArgumentException("Keys cannot contain whitespace characters.");
+        for($i = 0; $i < strlen($key); ++$i) {
+            if(ctype_cntrl($key[$i])) {
+                throw new \Hoard\InvalidArgumentException("Keys cannot contain control characters.");
+            }
+            if(ctype_space($key[$i])) {
+                throw new \Hoard\InvalidArgumentException("Keys cannot contain whitespace characters.");
+            }
         }
     }
 
