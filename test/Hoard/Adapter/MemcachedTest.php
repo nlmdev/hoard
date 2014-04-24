@@ -15,4 +15,14 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
         $adapter->validateKey("\n");
     }
 
+    /**
+     * @expectedException \Hoard\InvalidArgumentException
+     * @expectedExceptionMessage Keys cannot contain whitespace characters.
+     */
+    public function testKeyWillNotAcceptWhitespaceCharacters()
+    {
+        $adapter = new \Hoard\Adapter\Memcached();
+        $adapter->validateKey(" ");
+    }
+
 }
