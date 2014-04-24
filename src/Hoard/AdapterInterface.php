@@ -59,5 +59,9 @@ interface AdapterInterface
      */
     public function clear();
 
+    public function setAdapterOptions(array $options);
+
+    public function getAdapterOptions();
+
 }
 

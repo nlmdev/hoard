@@ -18,7 +18,7 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
     public function testWillSetAdapterOptionsWhenCreatingThePool()
     {
         $pool = CacheManager::getPool('test.simple');
-        $this->assertEquals($pool->getAdapterOptions(), array('adapter' => 'options'));
+        $this->assertEquals($pool->getAdapter()->getAdapterOptions(), array('adapter' => 'options'));
     }
 
     public function testDefaultLoggerIsASingleton()

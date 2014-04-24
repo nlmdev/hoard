@@ -58,6 +58,7 @@ class CacheManager implements CacheManagerInterface
         // create pool
         $pool = new $className($adapter);
         $adapter->setPool($pool);
+        $adapter->setAdapterOptions($pool->getAdapterOptions());
 
         // attach the default logger
         $pool->setLogger(self::getDefaultLogger());
