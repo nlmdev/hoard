@@ -62,12 +62,20 @@ class Memcached extends \Hoard\AbstractAdapter
         return new \Hoard\Item($this->pool, $key, $value, true);
     }
 
+    public function validateKey($key)
+    {
+        if(ctype_cntrl($key)) {
+            throw new \Hoard\InvalidArgumentException("Keys cannot contain control characters.");
+        }
+    }
+
     /**
      * Save item.
      * @param string $key The key.
      * @param mixed $value The unserialized value.
      * @param \DateTime $expireTime The absolute time this item must expire.
      * @return bool
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function set($key, $value, \DateTime $expireTime)
     {
