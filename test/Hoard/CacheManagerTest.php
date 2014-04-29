@@ -12,8 +12,27 @@ class DummyLogger extends \Psr\Log\AbstractLogger
 
 }
 
+class DummyAdapter extends \Hoard\Adapter\Memcached
+{
+}
+
 class CacheManagerTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function testWillUseMemcacheAdapterIfNotProvided()
+    {
+        $pool = CacheManager::getPool('test.simple');
+        $this->assertInstanceOf('\Hoard\Adapter\Memcached', $pool->getAdapter());
+    }
+
+    public function testWillUseAdapterIfProvided()
+    {
+        $config = array(
+            'adapter' => '\Hoard\DummyAdapter'
+        );
+        $pool = CacheManager::getPool('test.simple', $config);
+        $this->assertInstanceOf('\Hoard\DummyAdapter', $pool->getAdapter());
+    }
 
     public function testWillSetAdapterOptionsWhenCreatingThePool()
     {

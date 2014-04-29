@@ -53,6 +53,9 @@ class CacheManager implements CacheManagerInterface
 
         // create adapter
         $adapterClass = '\Hoard\Adapter\Memcached';
+        if(array_key_exists('adapter', $config)) {
+            $adapterClass = $config['adapter'];
+        }
         $adapter = new $adapterClass($config);
 
         // create pool
