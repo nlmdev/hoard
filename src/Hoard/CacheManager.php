@@ -51,17 +51,18 @@ class CacheManager implements CacheManagerInterface
             throw new NoSuchPoolException($poolName);
         }
 
+        // create pool
+        $pool = new $className();
+        $adapterOptions = $pool->getAdapterOptions();
+
         // create adapter
         $adapterClass = '\Hoard\Adapter\Memcached';
-        if(array_key_exists('adapter', $config)) {
-            $adapterClass = $config['adapter'];
+        if(array_key_exists('adapter', $adapterOptions)) {
+            $adapterClass = $adapterOptions['adapter'];
         }
-        $adapter = new $adapterClass($config);
-
-        // create pool
-        $pool = new $className($adapter);
+        $adapter = new $adapterClass($adapterOptions);
         $adapter->setPool($pool);
-        $adapter->setAdapterOptions($pool->getAdapterOptions());
+        $pool->setAdapter($adapter);
 
         // attach the default logger
         $pool->setLogger(self::getDefaultLogger());
