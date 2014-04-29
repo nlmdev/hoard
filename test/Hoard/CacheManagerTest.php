@@ -27,17 +27,14 @@ class CacheManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testWillUseAdapterIfProvided()
     {
-        $config = array(
-            'adapter' => '\Hoard\DummyAdapter'
-        );
-        $pool = CacheManager::getPool('test.simple', $config);
+        $pool = CacheManager::getPool('test.custom_adapter');
         $this->assertInstanceOf('\Hoard\DummyAdapter', $pool->getAdapter());
     }
 
     public function testWillSetAdapterOptionsWhenCreatingThePool()
     {
         $pool = CacheManager::getPool('test.simple');
-        $this->assertEquals($pool->getAdapter()->getAdapterOptions(), array('adapter' => 'options'));
+        $this->assertEquals($pool->getAdapter()->getAdapterOptions(), array('foo' => 'bar'));
     }
 
     public function testDefaultLoggerIsASingleton()

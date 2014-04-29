@@ -13,7 +13,7 @@ class Simple extends \Hoard\AbstractPool
     public function getAdapterOptions()
     {
         return array(
-            'adapter' => 'options'
+            'foo' => 'bar'
         );
     }
 

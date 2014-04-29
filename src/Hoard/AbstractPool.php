@@ -19,10 +19,10 @@ abstract class AbstractPool implements PoolInterface
     protected $logger = null;
 
     /**
-     * Create a pool with an adapter.
+     * Set the adapter.
      * @param \Hoard\AdapterInterface $adapter The adapter.
      */
-    public function __construct(\Hoard\AdapterInterface $adapter)
+    public function setAdapter(\Hoard\AdapterInterface $adapter)
     {
         $this->adapter = $adapter;
     }
