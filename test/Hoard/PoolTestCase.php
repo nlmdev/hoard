@@ -43,7 +43,8 @@ class PoolTestCase extends \PHPUnit_Framework_TestCase
         }
 
         // mock the original business logic
-        $mock = $this->getMock($className, null, array($adapter));
+        $mock = $this->getMock($className, null);
+        $mock->setAdapter($adapter);
         $adapter->setPool($mock);
 
         // load in the items
