@@ -27,6 +27,10 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
 
     public function testKeyWillBeValidatedOnSet()
     {
+        if(!class_exists('Memcached')) {
+            $this->markTestSkipped();
+        }
+
         $key = 'abc';
         $adapter = $this->getMock('\Hoard\Adapter\Memcached', array('validateKey', 'getPrefix'));
         $adapter->expects($this->once())

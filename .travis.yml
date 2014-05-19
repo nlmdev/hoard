@@ -5,4 +5,5 @@ install:
   - composer install
 services:
   - memcached
-before_script: phpenv config-add config/memcached.ini
+  - redis-server
+before_script: phpenv config-add config/php.ini
