@@ -5,9 +5,9 @@ namespace HoardPool\Test;
 class Simple extends \Hoard\AbstractPool
 {
 
-    public static function getAdapterName()
+    public function getAdapterClass()
     {
-        return 'transient';
+        return '\Hoard\Adapter\Transient';
     }
 
     public function getAdapterOptions()
@@ -18,4 +18,3 @@ class Simple extends \Hoard\AbstractPool
     }
 
 }
-

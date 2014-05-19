@@ -19,12 +19,6 @@ class DummyAdapter extends \Hoard\Adapter\Memcached
 class CacheManagerTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testWillUseMemcacheAdapterIfNotProvided()
-    {
-        $pool = CacheManager::getPool('test.simple');
-        $this->assertInstanceOf('\Hoard\Adapter\Memcached', $pool->getAdapter());
-    }
-
     public function testWillUseAdapterIfProvided()
     {
         $pool = CacheManager::getPool('test.custom_adapter');
