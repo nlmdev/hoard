@@ -54,7 +54,7 @@ retrieve the pool instances.**
     catch(\Hoard\NoSuchPoolException $e) {
         // deal with this appropriately
     }
-    
+
 ### Storing and Retrieving ###
 
 Once you have the pool instance (from the previous example), you can:
@@ -65,25 +65,25 @@ Once you have the pool instance (from the previous example), you can:
     }
     else {
         echo "Item {$item->getKey()} is not in the cache.";
-    }    
-    
+    }
+
 Regardless of whether the item was stored in the cache previously, you save
 data to the cache the same way:
 
     $item->set('myvalue')
-    
+
 There is an optional second argument for `set()` that allows you to specify a
 expiry time:
 
 These will never expire (default):
 
-    $item->set('myvalue');       
+    $item->set('myvalue');
     $item->set('myvalue', null);
-    
+
 This will expire in 1 hour from now:
 
     $item->set('myvalue', 3600);
-    
+
 This will expire at the specific timestamp:
 
     $item->set('myvalue', new \DateTime('4th March 2015'));
@@ -111,7 +111,7 @@ indentation can be any white space before a command.
 Run targets like you would a Makefile, through the `./g` script:
 
     ./g hoard mytarget
-    
+
 ### Syntax ###
 
 Pool names are important because they link directly to concrete classes, trying
@@ -181,4 +181,3 @@ have prepopulated data. This is easier than trying to do it in other ways.
         }
 
     }
-
