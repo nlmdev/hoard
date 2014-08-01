@@ -1,10 +1,10 @@
 {
-    "name": "elliotchance/hoard",
+    "name": "nlmdev/hoard",
     "description": "A PSR-compliant caching library for holding objects in nested pools with scripting ability.",
     "authors": [
         {
-            "name": "Elliot Chance",
-            "email": "elliotchance@gmail.com"
+            "name": "Nlm users",
+            "email": "nono@example.com"
         }
     ],
     "require": {
