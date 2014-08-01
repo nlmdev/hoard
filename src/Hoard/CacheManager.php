@@ -56,10 +56,12 @@ class CacheManager implements CacheManagerInterface
         $adapterOptions = $pool->getAdapterOptions();
 
         // create adapter
-        $adapterClass = $pool->getAdapterClass();
         if(array_key_exists('adapter', $adapterOptions)) {
             $adapterClass = $adapterOptions['adapter'];
+        } else {
+            $adapterClass = $pool->getAdapterClass();
         }
+
         $adapter = new $adapterClass($adapterOptions);
         $adapter->setPool($pool);
         $pool->setAdapter($adapter);
