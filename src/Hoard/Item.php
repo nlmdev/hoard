@@ -83,14 +83,11 @@ class Item implements ItemInterface
         $this->value = $value;
         if(null === $ttl) {
             $expireTime = $this->pool->getDefaultExpireTime();
-        }
-        elseif($ttl instanceof \DateTime) {
+        } elseif($ttl instanceof \DateTime) {
             $expireTime = $ttl;
-        }
-        elseif(is_int($ttl)) {
+        } elseif(is_int($ttl)) {
             $expireTime = new \DateTime("+{$ttl} second");
-        }
-        else {
+        } else {
             throw new InvalidArgumentException("Invalid argument for TTL.");
         }
 
