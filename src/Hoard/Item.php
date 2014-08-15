@@ -80,6 +80,17 @@ class Item implements ItemInterface
      */
     public function set($value = null, $ttl = null)
     {
+        if ($value == '') {
+            $context = array(
+                'key' => $this->key,
+                'value' => $value,
+                'request_uri' => isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null
+            );
+			
+            // log error
+            $this->pool->getLogger()->error('Caching empty value', $context);
+        }
+	
         $this->value = $value;
         if(null === $ttl) {
             $expireTime = $this->pool->getDefaultExpireTime();
