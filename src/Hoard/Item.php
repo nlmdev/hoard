@@ -88,7 +88,7 @@ class Item implements ItemInterface
             );
 			
             // log error
-            $this->pool->getLogger()->error('Caching empty value', $context);
+            $this->pool->getLogger()->alert('Caching empty value', $context);
         }
 	
         $this->value = $value;
