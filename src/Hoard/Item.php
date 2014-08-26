@@ -86,11 +86,14 @@ class Item implements ItemInterface
                 'value' => $value,
                 'request_uri' => isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null
             );
-			
+
             // log error
-            $this->pool->getLogger()->alert('Caching empty value', $context);
+            $logger = $this->pool->getLogger();
+            if (isset($logger)) {
+                $logger->alert('Caching empty value', $context);
+            }
         }
-	
+
         $this->value = $value;
         if(null === $ttl) {
             $expireTime = $this->pool->getDefaultExpireTime();
