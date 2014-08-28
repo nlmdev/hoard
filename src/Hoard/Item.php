@@ -76,21 +76,24 @@ class Item implements ItemInterface
      * never expire. If it's and int it will be used as the number of seconds
      * from now until the item expire. Finally you can specify a \DateTime for
      * an absolute expire time.
+     * @param bool $shouldNotBeEmpty (true) If set to false, then empty value will be treated as error
+     * @throws InvalidArgumentException when TTL isn't a valid value
      * @return TRUE on success, FALSE otherwise.
      */
-    public function set($value = null, $ttl = null)
+    public function set($value = null, $ttl = null, $shouldNotBeEmpty = false)
     {
-        if ($value == '') {
-            $context = array(
-                'key' => $this->key,
-                'value' => $value,
-                'request_uri' => isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null
-            );
-
+        if ($shouldNotBeEmpty && empty($value)) {
             // log error
             $logger = $this->pool->getLogger();
             if (isset($logger)) {
-                $logger->alert('Caching empty value', $context);
+                $logger->alert(
+                    'Caching empty value',
+                    array(
+                        'key' => $this->key,
+                        'value' => $value,
+                        'request_uri' => isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null
+                    )
+                );
             }
         }
 
