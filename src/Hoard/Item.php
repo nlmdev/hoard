@@ -87,7 +87,7 @@ class Item implements ItemInterface
             $logger = $this->pool->getLogger();
             if (isset($logger)) {
                 $logger->alert(
-                    'Caching empty value',
+                    'Caching empty value - ['.$this->key.']',
                     array(
                         'key' => $this->key,
                         'value' => $value,
