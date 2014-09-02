@@ -87,8 +87,9 @@ class Item implements ItemInterface
             $logger = $this->pool->getLogger();
             if (isset($logger)) {
                 $logger->alert(
-                    'Caching empty value - ['.$this->key.']',
+                    'Caching empty value - ['.get_class($this->pool).':'.$this->key.']',
                     array(
+                        'pool' => get_class($this->pool),
                         'key' => $this->key,
                         'value' => $value,
                         'request_uri' => isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null
