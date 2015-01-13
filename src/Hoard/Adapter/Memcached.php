@@ -30,7 +30,33 @@ class Memcached extends \Hoard\AbstractAdapter
             if(!class_exists('\Memcached')) {
                 throw new \Exception('Memcached extension is not installed.');
             }
+
             $this->connection = new \Memcached();
+
+            // setup memcached options
+            if (isset($this->adapterOptions['client']) && is_array($this->adapterOptions['client'])) {
+                foreach ($this->adapterOptions['client'] as $name => $value) {
+                    $optId = null;
+
+                    if (is_int($name)) {
+                        $optId = $name;
+                    } else {
+                        $optConst = 'Memcached::OPT_' . strtoupper($name);
+
+                        if (defined($optConst)) {
+                            $optId = constant($optConst);
+                        } else {
+                            throw new \Exception("Unknown memcached client option '{$name}' ({$optConst})");
+                        }
+                    }
+
+                    if (null !== $optId) {
+                        if (!$this->connection->setOption($optId, $value)) {
+                            throw new \Exception("Setting memcached client option '{$optId}' failed");
+                        }
+                    }
+                }
+            }
 
             // if no servers are provided try to bind to default configuration
             if(!array_key_exists('servers', $this->adapterOptions)) {
@@ -45,6 +71,7 @@ class Memcached extends \Hoard\AbstractAdapter
                 $this->connection->addServer($host, $port);
             }
         }
+
         return $this->connection;
     }
 
@@ -209,4 +236,3 @@ class Memcached extends \Hoard\AbstractAdapter
     }
 
 }
-
