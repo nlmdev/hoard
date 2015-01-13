@@ -1,8 +1,6 @@
 Hoard
 =====
 
-[![Build Status](https://travis-ci.org/elliotchance/Hoard.svg?branch=master)](https://travis-ci.org/elliotchance/Hoard)
-
 What Is It?
 -----------
 
@@ -181,3 +179,9 @@ have prepopulated data. This is easier than trying to do it in other ways.
         }
 
     }
+
+
+Modified to add options to Memcached
+------------------------------------
+
+Added code that sets the value of a Memcached option. Some options correspond to the ones defined by libmemcached, and some are specific to the extension. See Memcached Constants for more information.
