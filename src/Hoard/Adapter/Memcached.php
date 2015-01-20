@@ -25,50 +25,54 @@ class Memcached extends \Hoard\AbstractAdapter
      */
     protected final function getConnection()
     {
+        $defaultPersistentId = 'hoard-persist';
+
         // first time connect
         if(null == $this->connection) {
             if(!class_exists('\Memcached')) {
                 throw new \Exception('Memcached extension is not installed.');
             }
 
-            $this->connection = new \Memcached();
+            $this->connection = new \Memcached($defaultPersistentId);
 
-            // setup memcached options
-            if (isset($this->adapterOptions['client']) && is_array($this->adapterOptions['client'])) {
-                foreach ($this->adapterOptions['client'] as $name => $value) {
-                    $optId = null;
+            if (!count($this->connection->getServerList())) {
+                // setup memcached options
+                if (isset($this->adapterOptions['client']) && is_array($this->adapterOptions['client'])) {
+                    foreach ($this->adapterOptions['client'] as $name => $value) {
+                        $optId = null;
 
-                    if (is_int($name)) {
-                        $optId = $name;
-                    } else {
-                        $optConst = 'Memcached::OPT_' . strtoupper($name);
-
-                        if (defined($optConst)) {
-                            $optId = constant($optConst);
+                        if (is_int($name)) {
+                            $optId = $name;
                         } else {
-                            throw new \Exception("Unknown memcached client option '{$name}' ({$optConst})");
-                        }
-                    }
+                            $optConst = 'Memcached::OPT_' . strtoupper($name);
 
-                    if (null !== $optId) {
-                        if (!$this->connection->setOption($optId, $value)) {
-                            throw new \Exception("Setting memcached client option '{$optId}' failed");
+                            if (defined($optConst)) {
+                                $optId = constant($optConst);
+                            } else {
+                                throw new \Exception("Unknown memcached client option '{$name}' ({$optConst})");
+                            }
+                        }
+
+                        if (null !== $optId) {
+                            if (!$this->connection->setOption($optId, $value)) {
+                                throw new \Exception("Setting memcached client option '{$optId}' failed");
+                            }
                         }
                     }
                 }
-            }
 
-            // if no servers are provided try to bind to default configuration
-            if(!array_key_exists('servers', $this->adapterOptions)) {
-                $this->adapterOptions['servers'] = array(
-                    'localhost:11211'
-                );
-            }
+                // if no servers are provided try to bind to default configuration
+                if(!array_key_exists('servers', $this->adapterOptions)) {
+                    $this->adapterOptions['servers'] = array(
+                        'localhost:11211'
+                    );
+                }
 
-            // add servers
-            foreach($this->adapterOptions['servers'] as $server) {
-                list($host, $port) = explode(':', $server, 2);
-                $this->connection->addServer($host, $port);
+                // add servers
+                foreach($this->adapterOptions['servers'] as $server) {
+                    list($host, $port) = explode(':', $server, 2);
+                    $this->connection->addServer($host, $port);
+                }
             }
         }
 
