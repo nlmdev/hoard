@@ -2,6 +2,8 @@
 
 namespace Hoard\Adapter;
 
+use Predis\Client as PredisClient;
+
 /**
  * @brief Redis adapter.
  */
@@ -9,7 +11,7 @@ class Redis extends \Hoard\AbstractAdapter
 {
 
     /**
-     * @var \Predis\Client
+     * @var PredisClient
      */
     protected $connection = null;
 
@@ -25,9 +27,15 @@ class Redis extends \Hoard\AbstractAdapter
      */
     protected final function getConnection()
     {
+        // set the servers to use with this connection
+        $servers = array();
+        if (array_key_exists('servers', $this->adapterOptions)) {
+            $servers = $this->adapterOptions['servers'];
+        }
+
         // first time connect
         if(null == $this->connection) {
-            $this->connection = new \Predis\Client();
+            $this->connection = new PredisClient($servers);
         }
         return $this->connection;
     }
@@ -54,32 +62,27 @@ class Redis extends \Hoard\AbstractAdapter
      * @param \DateTime $expireTime The absolute time this item must expire.
      * @return bool
      */
-    public function set($key, $value, \DateTime $expireTime)
+    public function set($key, $value, \DateTime $expireTime = null)
     {
         $realKey = $this->getPrefix() . $key;
-        $r = $this->getConnection()->set($realKey, serialize($value));
 
-        // To prevent the clock in the memcache server becoming out of sync
-        // with that of the applicaton server we are allowed to specify the
-        // seconds upto 1 month. Recognise this and handle appropriately.
-        $month = 30 * 24 * 3600;
+        // check if key is expired already and delete just in case
         $now = new \DateTime();
-        $diff = $expireTime->getTimestamp() - $now->getTimestamp();
-        if($diff < 0) {
-            // item is already expired
-            $this->delete($key);
+        if ($now > $expireTime) {
+            $this->getConnection()->del($realKey);
+
             return false;
         }
-        if($diff < $month) {
-            $expire = $diff;
-        }
-        else {
-            $expire = $expireTime->getTimestamp();
-        }
-        $this->getConnection()->expire($realKey, $expire);
 
-        return $r;
-    }
+        // key hasn't expired so move on
+        $r = $this->getConnection()->set($realKey, serialize($value));
+
+        // expire the key if it has an expiry set
+        if (null !== $expireTime) {
+            $this->getConnection()->expireat($realKey, $expireTime->getTimestamp());
+        }
+
+        return $r;    }
 
     /**
      * Delete an item from the cache.
