@@ -48,7 +48,7 @@ class Redis extends \Hoard\AbstractAdapter
     public function get($key)
     {
         $realKey = $this->getPrefix() . $key;
-        if($this->getConnection()->type($realKey) === 'none') {
+        if($this->getConnection()->type($realKey)->getPayload() === 'none') {
             return new \Hoard\Item($this->pool, $key, null, false);
         }
         $value = $this->getConnection()->get($realKey);
