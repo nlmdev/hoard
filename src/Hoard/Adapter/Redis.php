@@ -2,6 +2,8 @@
 
 namespace Hoard\Adapter;
 
+use Predis\Client as PredisClient;
+
 /**
  * @brief Redis adapter.
  */
@@ -9,7 +11,7 @@ class Redis extends \Hoard\AbstractAdapter
 {
 
     /**
-     * @var \Predis\Client
+     * @var PredisClient
      */
     protected $connection = null;
 
@@ -21,14 +23,21 @@ class Redis extends \Hoard\AbstractAdapter
 
     /**
      * This method cannot be overridden because you need to override \Hoard\AbstractPool::getAdapterOptions().
-     * @return \Memcached
+     * @return \Predis\Client
      */
     protected final function getConnection()
     {
-        // first time connect
-        if(null == $this->connection) {
-            $this->connection = new \Predis\Client();
+        // set the servers to use with this connection
+        $servers = array();
+        if (array_key_exists('servers', $this->adapterOptions)) {
+            $servers = $this->adapterOptions['servers'];
         }
+
+        // first time connect
+        if (null == $this->connection || !$this->connection->isConnected()) {
+            $this->connection = new PredisClient($servers);
+        }
+
         return $this->connection;
     }
 
@@ -40,7 +49,7 @@ class Redis extends \Hoard\AbstractAdapter
     public function get($key)
     {
         $realKey = $this->getPrefix() . $key;
-        if($this->getConnection()->type($realKey) === 'none') {
+        if ($this->getConnection()->type($realKey)->getPayload() === 'none') {
             return new \Hoard\Item($this->pool, $key, null, false);
         }
         $value = $this->getConnection()->get($realKey);
@@ -54,29 +63,25 @@ class Redis extends \Hoard\AbstractAdapter
      * @param \DateTime $expireTime The absolute time this item must expire.
      * @return bool
      */
-    public function set($key, $value, \DateTime $expireTime)
+    public function set($key, $value, \DateTime $expireTime = null)
     {
         $realKey = $this->getPrefix() . $key;
-        $r = $this->getConnection()->set($realKey, serialize($value));
 
-        // To prevent the clock in the memcache server becoming out of sync
-        // with that of the applicaton server we are allowed to specify the
-        // seconds upto 1 month. Recognise this and handle appropriately.
-        $month = 30 * 24 * 3600;
+        // check if key is expired already and delete just in case
         $now = new \DateTime();
-        $diff = $expireTime->getTimestamp() - $now->getTimestamp();
-        if($diff < 0) {
-            // item is already expired
-            $this->delete($key);
+        if ($now > $expireTime) {
+            $this->getConnection()->del($realKey);
+
             return false;
         }
-        if($diff < $month) {
-            $expire = $diff;
+
+        // key hasn't expired so move on
+        $r = $this->getConnection()->set($realKey, serialize($value));
+
+        // expire the key if it has an expiry set
+        if (null !== $expireTime) {
+            $this->getConnection()->expireat($realKey, $expireTime->getTimestamp());
         }
-        else {
-            $expire = $expireTime->getTimestamp();
-        }
-        $this->getConnection()->expire($realKey, $expire);
 
         return $r;
     }
@@ -116,7 +121,7 @@ class Redis extends \Hoard\AbstractAdapter
     public function getPrefix()
     {
         $poolName = $this->pool->getName();
-        if(!array_key_exists($poolName, self::$prefixes)) {
+        if (!array_key_exists($poolName, self::$prefixes)) {
             // we need a list of of the full class hierarchy, in order of
             // longest string last
             $classes = class_parents($this->pool);
@@ -125,7 +130,7 @@ class Redis extends \Hoard\AbstractAdapter
             sort($classes);
 
             $prefix = "";
-            foreach($classes as $class) {
+            foreach ($classes as $class) {
                 // try and get the version from the memcached server
                 $self = new $class($this);
                 $poolName = $self->getName();
@@ -133,17 +138,18 @@ class Redis extends \Hoard\AbstractAdapter
                 $version = $this->getConnection()->get($versionKey);
 
                 // if there was no version returned, we save it back now
-                if(!ctype_digit($version)) {
+                if (!ctype_digit($version)) {
                     $version = 1;
                     $this->getConnection()->set($versionKey, $version);
                 }
-                
+
                 // set the prefix
                 $prefix .= "{$poolName}::{$version}::";
             }
 
             self::$prefixes[$poolName] = $prefix;
         }
+
         return self::$prefixes[$poolName];
     }
 
@@ -158,7 +164,7 @@ class Redis extends \Hoard\AbstractAdapter
         $poolName = $this->pool->getName();
         $key = "{$poolName}::VERSION";
         $item = $this->get($key);
-        if(!ctype_digit($item->get())) {
+        if (!ctype_digit($item->get())) {
             $item->set('0');
         }
         $this->getConnection()->incr($key);
