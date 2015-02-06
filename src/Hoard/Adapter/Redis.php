@@ -23,7 +23,7 @@ class Redis extends \Hoard\AbstractAdapter
 
     /**
      * This method cannot be overridden because you need to override \Hoard\AbstractPool::getAdapterOptions().
-     * @return \Memcached
+     * @return \Predis\Client
      */
     protected final function getConnection()
     {
@@ -34,9 +34,10 @@ class Redis extends \Hoard\AbstractAdapter
         }
 
         // first time connect
-        if(null == $this->connection) {
+        if (null == $this->connection || !$this->connection->isConnected()) {
             $this->connection = new PredisClient($servers);
         }
+
         return $this->connection;
     }
 
@@ -48,7 +49,7 @@ class Redis extends \Hoard\AbstractAdapter
     public function get($key)
     {
         $realKey = $this->getPrefix() . $key;
-        if($this->getConnection()->type($realKey)->getPayload() === 'none') {
+        if ($this->getConnection()->type($realKey)->getPayload() === 'none') {
             return new \Hoard\Item($this->pool, $key, null, false);
         }
         $value = $this->getConnection()->get($realKey);
@@ -82,7 +83,8 @@ class Redis extends \Hoard\AbstractAdapter
             $this->getConnection()->expireat($realKey, $expireTime->getTimestamp());
         }
 
-        return $r;    }
+        return $r;
+    }
 
     /**
      * Delete an item from the cache.
@@ -119,7 +121,7 @@ class Redis extends \Hoard\AbstractAdapter
     public function getPrefix()
     {
         $poolName = $this->pool->getName();
-        if(!array_key_exists($poolName, self::$prefixes)) {
+        if (!array_key_exists($poolName, self::$prefixes)) {
             // we need a list of of the full class hierarchy, in order of
             // longest string last
             $classes = class_parents($this->pool);
@@ -128,7 +130,7 @@ class Redis extends \Hoard\AbstractAdapter
             sort($classes);
 
             $prefix = "";
-            foreach($classes as $class) {
+            foreach ($classes as $class) {
                 // try and get the version from the memcached server
                 $self = new $class($this);
                 $poolName = $self->getName();
@@ -136,17 +138,18 @@ class Redis extends \Hoard\AbstractAdapter
                 $version = $this->getConnection()->get($versionKey);
 
                 // if there was no version returned, we save it back now
-                if(!ctype_digit($version)) {
+                if (!ctype_digit($version)) {
                     $version = 1;
                     $this->getConnection()->set($versionKey, $version);
                 }
-                
+
                 // set the prefix
                 $prefix .= "{$poolName}::{$version}::";
             }
 
             self::$prefixes[$poolName] = $prefix;
         }
+
         return self::$prefixes[$poolName];
     }
 
@@ -161,7 +164,7 @@ class Redis extends \Hoard\AbstractAdapter
         $poolName = $this->pool->getName();
         $key = "{$poolName}::VERSION";
         $item = $this->get($key);
-        if(!ctype_digit($item->get())) {
+        if (!ctype_digit($item->get())) {
             $item->set('0');
         }
         $this->getConnection()->incr($key);
