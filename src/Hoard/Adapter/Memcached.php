@@ -117,27 +117,6 @@ class Memcached extends \Hoard\AbstractAdapter
     {
         $this->validateKey($key);
 
-        // saving keys list
-        $keysList = array();
-        $keyFoundinList = false;
-        $keyStoreId = $this->pool->getName().'::KEYLIST';
-        if ($encodedKeysList = $this->getConnection()->get($keyStoreId)) {
-            $keysList = json_decode($encodedKeysList);
-            foreach ($keysList as $tempKey) {
-                if ($tempKey == $key) {
-                    $keyFoundinList = true;
-                    break;
-                }
-            }
-        }
-
-        if (false == $keyFoundinList) {
-            $keysList[] = $key;
-        }
-
-        $encodedKeysList = json_encode($keysList);
-        $this->getConnection()->set($keyStoreId, $encodedKeysList, 86400 * 30);
-
         // To prevent the clock in the memcache server becoming out of sync
         // with that of the applicaton server we are allowed to specify the
         // seconds upto 1 month. Recognise this and handle appropriately.
