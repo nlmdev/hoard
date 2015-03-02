@@ -21,7 +21,9 @@ class Memcached extends \Hoard\AbstractAdapter
 
     /**
      * This method cannot be overridden because you need to override \Hoard\AbstractPool::getAdapterOptions().
+     *
      * @return \Memcached
+     * @throws \Exception
      */
     protected final function getConnection()
     {
