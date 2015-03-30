@@ -157,9 +157,10 @@ class Redis extends \Hoard\AbstractAdapter
      * Scan key-value indices and return the value of all matching keys
      *
      * @param string $key
+     * @param int $limit
      * @return string[]
      */
-    public function scan($key)
+    public function scan($key, $limit = 10000)
     {
         $cursor = 0;
         $results = [];
@@ -175,6 +176,11 @@ class Redis extends \Hoard\AbstractAdapter
             $set = $node->executeCommand($cmd);
             $cursor = $set[0];
             $results = array_merge($results, $set[1]);
+
+            if (count($results) > $limit) {
+                $results = array_slice($results, 0, $limit);
+                break;
+            }
         } while ($cursor != 0);
 
         return $results;
@@ -188,12 +194,13 @@ class Redis extends \Hoard\AbstractAdapter
     {
         // clearing the cache
         $poolName = $this->pool->getName();
-
-        $keysList = $this->scan("*{$poolName}::*");
-
-        foreach ($keysList as $id => $keyname) {
-            $this->getConnection()->del($keyname);
-        }
+        do {
+            $keysList = $this->scan("*{$poolName}::*");
+            $count = count($keysList);
+            foreach ($keysList as $id => $keyname) {
+                $this->getConnection()->del($keyname);
+            }
+        } while ($count > 0);
 
         return true;
     }
