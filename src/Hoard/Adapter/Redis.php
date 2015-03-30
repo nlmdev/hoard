@@ -177,7 +177,7 @@ class Redis extends \Hoard\AbstractAdapter
             $cursor = $set[0];
             $results = array_merge($results, $set[1]);
 
-            if ($results > $limit) {
+            if (count($results) > $limit) {
                 $results = array_slice($results, 0, $limit);
                 break;
             }
