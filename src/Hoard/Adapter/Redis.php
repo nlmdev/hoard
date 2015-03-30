@@ -154,24 +154,46 @@ class Redis extends \Hoard\AbstractAdapter
     }
 
     /**
+     * Scan key-value indices and return the value of all matching keys
+     *
+     * @param string $key
+     * @return string[]
+     */
+    public function scan($key)
+    {
+        $cursor = 0;
+        $results = [];
+        // yeah, that's doing it twice, amazing
+        $connection = $this->getConnection()->getConnection();
+
+        do {
+            $iterator = $connection->getIterator();
+            /** @var NodeConnectionInterface $node */
+            $node = $iterator->current();
+            $cmd = new \Predis\Command\KeyScan();
+            $cmd->setArguments([$cursor, 'MATCH', $key]);
+            $set = $node->executeCommand($cmd);
+            $cursor = $set[0];
+            $results = array_merge($results, $set[1]);
+        } while ($cursor != 0);
+
+        return $results;
+    }
+
+    /**
      * Drop all of the items in the cache.
      * @return Always TRUE.
      */
     public function clear()
     {
-        // clearing the cache means we increment the version, making all the
-        // previous keys unreachable.
+        // clearing the cache
         $poolName = $this->pool->getName();
-        $key = "{$poolName}::VERSION";
-        $item = $this->get($key);
-        if (!ctype_digit($item->get())) {
-            $item->set('0');
-        }
-        $this->getConnection()->incr($key);
 
-        // invalidate all prefixes for all other pool, even though this will
-        // cause pool that are unrelated to be refreshed
-        self::$prefixes = array();
+        $keysList = $this->scan("*{$poolName}::*");
+
+        foreach ($keysList as $id => $keyname) {
+            $this->getConnection()->del($keyname);
+        }
 
         return true;
     }
