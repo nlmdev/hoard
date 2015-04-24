@@ -154,30 +154,28 @@ class Redis extends \Hoard\AbstractAdapter
     }
 
     /**
-     * Scan key-value indices and return the value of all matching keys
+     * Scan key-value indices and return the value of matching keys
      *
-     * @param string $key
-     * @return string[]
+     * @param string $pattern
+     * @param int $limit
+     * @return array
      */
-    public function scan($key)
+    public function scan($pattern, $limit = 50)
     {
-        $cursor = 0;
-        $results = [];
         // yeah, that's doing it twice, amazing
         $connection = $this->getConnection()->getConnection();
 
-        do {
-            $iterator = $connection->getIterator();
-            /** @var NodeConnectionInterface $node */
-            $node = $iterator->current();
-            $cmd = new \Predis\Command\KeyScan();
-            $cmd->setArguments([$cursor, 'MATCH', $key]);
-            $set = $node->executeCommand($cmd);
-            $cursor = $set[0];
-            $results = array_merge($results, $set[1]);
-        } while ($cursor != 0);
+        $iterator = $connection->getIterator();
+        /** @var NodeConnectionInterface $node */
+        $node = $iterator->current();
+        $cmd = new \Predis\Command\KeyScan();
+        $cmd->setArguments([$cursor, 'MATCH', $pattern, 'COUNT', $limit]);
+        $set = $node->executeCommand($cmd);
 
-        return $results;
+        return [
+            'cursor' => $set[0],
+            'keys' => $set[1],
+        ];
     }
 
     /**
@@ -186,14 +184,19 @@ class Redis extends \Hoard\AbstractAdapter
      */
     public function clear()
     {
-        // clearing the cache
         $poolName = $this->pool->getName();
 
-        $keysList = $this->scan("*{$poolName}::*");
+        $cursor = 1;
+        do {
+            $scanResult = $this->scan("*::{$poolName}::*");
 
-        foreach ($keysList as $id => $keyname) {
-            $this->getConnection()->del($keyname);
-        }
+            $cursor = $scanResult['cursor'];
+            $keyList = $scanResult['keys'];
+
+            foreach ($keyList as $id => $keyname) {
+                $this->getConnection()->del($keyname);
+            }
+        } while ($cursor != 0);
 
         return true;
     }
