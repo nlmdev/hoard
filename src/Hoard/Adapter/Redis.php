@@ -169,7 +169,7 @@ class Redis extends \Hoard\AbstractAdapter
         /** @var NodeConnectionInterface $node */
         $node = $iterator->current();
         $cmd = new \Predis\Command\KeyScan();
-        $cmd->setArguments([$cursor, 'MATCH', $pattern, 'COUNT', $limit]);
+        $cmd->setArguments([0, 'MATCH', $pattern, 'COUNT', $limit]);
         $set = $node->executeCommand($cmd);
 
         return [
